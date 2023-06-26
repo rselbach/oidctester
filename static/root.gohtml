@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OIDC Tester</title>
+</head>
+<body>
+    <form action="/start" method="post">
+
+    <label for="server-root">OIDC Server:</label>
+    <input type="text" id="server-root" name="server-root" value={{.server}}><br><br>
+
+    <label for="client-id">Client ID:</label>
+    <input type="text" id="client-id" name="client-id" value={{.clientID}}><br><br>
+
+    <label for="client-secret">Client Secret:</label>
+    <input type="password" id="client-secret" name="client-secret" value={{.clientSecret}}><br><br>
+
+    <input type="submit" value="Login">
+  </form>
+
+</body>
+</html>
+

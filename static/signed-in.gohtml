@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    /* CSS styles for the table */
+    table {
+      max-width: 100%;
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px auto; /* Center the table horizontally */
+    }
+    
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+      word-break: break-all; /* Wrap the content within the cells */
+      position: relative; /* Add position: relative for positioning the copy icon */
+      cursor: pointer; /* Add cursor: pointer to indicate clickable */
+    }
+
+    td {
+     width: 100%;
+     }
+    
+    th {
+      background-color: #f2f2f2;
+      white-space: nowrap; /* Prevent header text from wrapping */
+      vertical-align: top; /* Align text to the top */
+    }
+
+    .toolbar {
+      background-color: #f2f2f2;
+      padding: 10px;
+    }
+
+    .toolbar button {
+      margin-right: 10px;
+    }
+  </style>
+  <script>
+    // Function to handle toggling content and copying to clipboard
+    function toggleContent(element) {
+      let td = element.nextElementSibling;
+
+      let currentContent = td.textContent.trim();
+      let tokenString = "{{.accessToken}}"; // Initial token string
+      let tokenPayload = "<pre>{{.accessTokenPayload}}</pre>"; // Initial token payload
+      
+      // Toggle the content only if it is an access token
+      if (currentContent === tokenString) {
+        td.innerHTML = tokenPayload;
+      } else {
+        td.textContent = tokenString;
+      }
+      
+      // Copy the new content to the clipboard
+      copyToClipboard(td);
+    }
+
+    // Function to handle toggling content and copying to clipboard
+    function toggleIDTokenContent(element) {
+      let td = element.nextElementSibling;
+
+      let currentContent = td.textContent.trim();
+      let idTokenString = "{{.idToken}}"; // Initial token string
+      let idTokenPayload = "<pre>{{.idTokenPayload}}</pre>"; // Initial token payload
+      
+      // Toggle the content only if it is an access token
+      if (currentContent === idTokenString) {
+        td.innerHTML = idTokenPayload;
+      } else {
+        td.textContent = idTokenString;
+      }
+      
+      // Copy the new content to the clipboard
+      copyToClipboard(td);
+    }
+    
+    // Function to handle copy functionality
+    function copyToClipboard(element) {
+      var range = document.createRange();
+      range.selectNode(element);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      document.execCommand("copy");
+      window.getSelection().removeAllRanges();
+    }
+  </script>
+</head>
+<body>
+  <div class="toolbar">
+    <button onclick="window.location.href='/logout'">Logout</button>
+    {{if .refreshToken}}<button onclick="window.location.href='/refresh'">Refresh</button>{{end}}
+  </div>
+  
+  <table> 
+    <tr>
+      <th>Token</th>
+      <th>Value</th>
+    </tr>
+    <tr>
+      <th onclick="toggleContent(this)">
+        Access Token
+      </th>
+      <td onclick="copyToClipboard(this.parentNode)">
+        {{.accessToken}}
+      </td>
+    </tr>
+
+    {{if .idToken}}
+    <tr>
+      <th onclick="toggleIDTokenContent(this)">
+        ID Token
+      </th>
+      <td onclick="copyToClipboard(this.parentNode)">
+        {{.idToken}}
+      </td>
+    </tr>
+    {{end}}
+
+    {{if .refreshToken}}
+    <tr>
+      <th>
+        Refresh Tokens
+      </th>
+      <td onclick="copyToClipboard(this.parentNode)">
+        {{.refreshToken}}
+      </td>
+    </tr>
+    {{end}}
+  </table>
+</body>
+</html>
