@@ -22,12 +22,6 @@ func handleRefresh(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Ooops %v", err)
 		return
 	}
-	// oc := oauth2.Config{
-	// 	ClientID:    cfg.ClientID,
-	// 	Endpoint:    provider.Endpoint(),
-	// 	RedirectURL: "http://localhost:8080/auth/callback",
-	// 	Scopes:      []string{oidc.ScopeOpenID, "offline", "offline_access"},
-	// }
 
 	state, err := getState(r)
 	if err != nil {

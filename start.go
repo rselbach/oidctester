@@ -30,13 +30,18 @@ func handleStart(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Ooops %v", err)
 		return
 	}
+
+	scheme := "http"
+	if r.TLS != nil {
+		scheme = "https"
+	}
+
 	oc := oauth2.Config{
 		ClientID:    cfg.ClientID,
 		Endpoint:    provider.Endpoint(),
-		RedirectURL: "http://localhost:8080/auth/callback",
+		RedirectURL: fmt.Sprintf("%s://%s/auth/callback", scheme, r.Host),
 		Scopes:      []string{oidc.ScopeOpenID, "offline", "offline_access"},
 	}
-
 	cv, _ := generateCodeVerifier()
 	state := nonce() // This should be a random string for security purposes
 
