@@ -44,7 +44,7 @@ func handleStart(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{Name: "code_verifier", Value: string(cv), Path: "/"})
 
 	authURL := oc.AuthCodeURL(state, oauth2.AccessTypeOnline,
-		cv.Challenge(),
+		cv.Challenge(), oauth2.SetAuthURLParam("max_age", "0"),
 		cv.Method())
 
 	http.Redirect(w, r, authURL, http.StatusFound)
@@ -65,10 +65,7 @@ func getRedirectURL(r *http.Request) string {
 		scheme = "https"
 	}
 
-
-
-
-		return fmt.Sprintf("%s/auth/callback", fmt.Sprintf("%s://%s", scheme, hostName))
+	return fmt.Sprintf("%s/auth/callback", fmt.Sprintf("%s://%s", scheme, hostName))
 }
 
 func join(a, b string) string {
