@@ -19,15 +19,11 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Ooops %v", err)
 		return
 	}
-	scheme := "http"
-	if r.TLS != nil {
-		scheme = "https"
-	}
 
 	oc := oauth2.Config{
 		ClientID:    cfg.ClientID,
 		Endpoint:    provider.Endpoint(),
-		RedirectURL: fmt.Sprintf("%s://%s/auth/callback", scheme, r.Host),
+		RedirectURL: getRedirectURL(r),
 		Scopes:      []string{oidc.ScopeOpenID, "offline", "offline_access"},
 	}
 

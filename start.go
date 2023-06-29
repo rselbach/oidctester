@@ -31,21 +31,16 @@ func handleStart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	scheme := "http"
-	if r.TLS != nil {
-		scheme = "https"
-	}
-
 	oc := oauth2.Config{
 		ClientID:    cfg.ClientID,
 		Endpoint:    provider.Endpoint(),
-		RedirectURL: fmt.Sprintf("%s://%s/auth/callback", scheme, r.Host),
+		RedirectURL: getRedirectURL(r),
 		Scopes:      []string{oidc.ScopeOpenID, "offline", "offline_access"},
 	}
 	cv, _ := generateCodeVerifier()
 	state := nonce() // This should be a random string for security purposes
 
-	//http.SetCookie(w, &http.Cookie{Name: "state", Value: state, Path: "/"})
+	// http.SetCookie(w, &http.Cookie{Name: "state", Value: state, Path: "/"})
 	http.SetCookie(w, &http.Cookie{Name: "code_verifier", Value: string(cv), Path: "/"})
 
 	authURL := oc.AuthCodeURL(state, oauth2.AccessTypeOnline,
@@ -53,4 +48,39 @@ func handleStart(w http.ResponseWriter, r *http.Request) {
 		cv.Method())
 
 	http.Redirect(w, r, authURL, http.StatusFound)
+}
+
+func getRedirectURL(r *http.Request) string {
+	if o := r.Header.Get("Origin"); o != "" {
+		return join(o, "/auth/callback")
+	}
+
+	if o := r.Header.Get("Referer"); o != "" {
+		return join(o, "/auth/callback")
+	}
+
+	hostName := r.Host
+	scheme := "http"
+	if r.TLS != nil {
+		scheme = "https"
+	}
+
+
+
+
+		return fmt.Sprintf("%s/auth/callback", fmt.Sprintf("%s://%s", scheme, hostName))
+}
+
+func join(a, b string) string {
+	aend, bbegin := a[len(a)-1], b[0]
+	if aend != '/' && bbegin != '/' {
+		return a + "/" + b
+	}
+
+	if aend == '/' && bbegin == '/' {
+		return a[:len(a)-1] + b
+	}
+
+	return a + b
+
 }
